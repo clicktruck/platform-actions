@@ -1,0 +1,153 @@
+name: "install-tanzu-standard-repo"
+
+on:
+  workflow_call:
+    inputs:
+      tkg-version:
+        description: "Tanzu Global Package Repository version"
+        type: string
+        required: true
+      cluster-provider:
+        description: "The Kubernetes service provider"
+        type: string
+        required: true
+    secrets:
+      GOOGLE_PROJECT_ID:
+        required: false
+      GOOGLE_SERVICE_ACCOUNT_KEY:
+        required: false
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+      AWS_SESSION_TOKEN:
+        required: false
+      AZURE_AD_CLIENT_ID:
+        required: false
+      AZURE_AD_CLIENT_SECRET:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+      AZURE_AD_TENANT_ID:
+        required: false
+      TANZU_NETWORK_API_TOKEN:
+        required: true
+      TANZU_NETWORK_USERNAME:
+        required: true
+      TANZU_NETWORK_PASSWORD:
+        required: true
+      PA_TOKEN:
+        required: true
+      KUBECONFIG_CONTENTS:
+        required: true
+
+jobs:
+  encode-tanzu-standard-repo-install-script:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      result: ${{ steps.encode.outputs.result }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/scripts
+    - name: Encode
+      id: encode
+      run: |
+          result="$(cat install-package.sh | base64 -w 0)"
+          echo "result=${result}" >> $GITHUB_OUTPUT
+
+  install:
+    needs: encode-tanzu-standard-repo-install-script
+    runs-on: ubuntu-22.04
+
+    env:
+      GITOPS_DIR: tanzu/standard
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout application-templates
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/application-templates
+
+    - name: Checkout azure-actions
+      if: inputs.cluster-provider == 'aks'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/azure-actions
+
+    - name: Checkout aws-actions
+      if: inputs.cluster-provider == 'eks'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/aws-actions
+
+    - name: Checkout google-actions
+      if: inputs.cluster-provider == 'gke'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/google-actions
+
+    - name: Render standard-install-config
+      uses: chuhlomin/render-template@v1.9
+      with:
+        template: ${{ env.GITOPS_DIR }}/.init/standard-install-config.tpl
+        vars: |
+          tkg_version: ${{ inputs.tkg-version }}
+        result_path: ${{ env.GITOPS_DIR }}/.init/standard-install-config.yml
+
+    - name: Render standard-install-secrets
+      uses: chuhlomin/render-template@v1.9
+      with:
+        template: ${{ env.GITOPS_DIR }}/.init/standard-install-secrets.tpl
+        vars: |
+          tanzu_network_username: ${{ secrets.TANZU_NETWORK_USERNAME }}
+          tanzu_network_password: ${{ secrets.TANZU_NETWORK_PASSWORD }}
+          git_username: ${{ github.repository_owner }}
+          git_personal_access_token: ${{ secrets.PA_TOKEN }}
+        result_path: ${{ env.GITOPS_DIR }}/.init/standard-install-secrets.yml
+
+    - name: Render standard-install
+      uses: chuhlomin/render-template@v1.9
+      with:
+        template: ${{ env.GITOPS_DIR }}/.install/standard-install.tpl
+        vars: |
+          git_ref_name: ${{ github.ref_name }}
+        result_path: ${{ env.GITOPS_DIR }}/.install/standard-install.yml
+
+    - name: "Install Tanzu Standard Repo on AKS"
+      if: inputs.cluster-provider == 'aks'
+      uses: ./docker/actions/azure/tanzu-runsh-setup-action
+      with:
+        script-contents: ${{ needs.encode-tanzu-standard-repo-install-script.outputs.result }}
+        script-arguments: "${{ env.GITOPS_DIR }} tanzu-standard-repo"
+        kubeconfig-contents: "${{ secrets.KUBECONFIG_CONTENTS }}"
+        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        azure-tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
+        azure-ad-client-id: ${{ secrets.AZURE_AD_CLIENT_ID }}
+        azure-ad-client-secret: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+
+    - name: "Install Tanzu Standard Repo on EKS"
+      if: inputs.cluster-provider == 'eks'
+      uses: ./docker/actions/aws/tanzu-runsh-setup-action
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        kubeconfig-contents: "${{ secrets.KUBECONFIG_CONTENTS }}"
+        script-contents: ${{ needs.encode-tanzu-standard-repo-install-script.outputs.result }}
+        script-arguments: "${{ env.GITOPS_DIR }} tanzu-standard-repo"
+
+    - name: "Install Tanzu Standard Repo on GKE"
+      if: inputs.cluster-provider == 'gke'
+      uses: ./docker/actions/google/tanzu-runsh-setup-action
+      with:
+        google-project-id: ${{ secrets.GOOGLE_PROJECT_ID }}
+        google-service-account-key: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        kubeconfig-contents: "${{ secrets.KUBECONFIG_CONTENTS }}"
+        script-contents: ${{ needs.encode-tanzu-standard-repo-install-script.outputs.result }}
+        script-arguments: "${{ env.GITOPS_DIR }} tanzu-standard-repo"

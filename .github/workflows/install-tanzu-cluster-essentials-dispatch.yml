@@ -1,0 +1,59 @@
+name: "install-tanzu-cluster-essentials-dispatch"
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster-provider:
+        description: "The Kubernetes service provider"
+        required: true
+        type: choice
+        options:
+          - eks
+          - aks
+          - gke
+      kubeconfig-contents:
+        description: "The base64 encoded contents of a .kube/config file that already has the current Kubernetes cluster context set"
+        required: true
+
+jobs:
+  install-tanzu-cluster-essentials-on-aks:
+    if: github.event.inputs.cluster-provider == 'aks'
+    uses: ./.github/workflows/install-tanzu-cluster-essentials.yml
+    with:
+      cluster-provider: ${{ github.event.inputs.cluster-provider }}
+    secrets:
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      TANZU_NETWORK_API_TOKEN: ${{ secrets.TANZU_NETWORK_API_TOKEN }}
+      TANZU_NETWORK_USERNAME: ${{ secrets.TANZU_NETWORK_USERNAME }}
+      TANZU_NETWORK_PASSWORD: ${{ secrets.TANZU_NETWORK_PASSWORD }}
+      KUBECONFIG_CONTENTS: ${{ github.event.inputs.kubeconfig-contents }}
+
+  install-tanzu-cluster-essentials-on-eks:
+    if: github.event.inputs.cluster-provider == 'eks'
+    uses: ./.github/workflows/install-tanzu-cluster-essentials.yml
+    with:
+      cluster-provider: ${{ github.event.inputs.cluster-provider }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      TANZU_NETWORK_API_TOKEN: ${{ secrets.TANZU_NETWORK_API_TOKEN }}
+      TANZU_NETWORK_USERNAME: ${{ secrets.TANZU_NETWORK_USERNAME }}
+      TANZU_NETWORK_PASSWORD: ${{ secrets.TANZU_NETWORK_PASSWORD }}
+      KUBECONFIG_CONTENTS: ${{ github.event.inputs.kubeconfig-contents }}
+
+  install-tanzu-cluster-essentials-on-gke:
+    if: github.event.inputs.cluster-provider == 'gke'
+    uses: ./.github/workflows/install-tanzu-cluster-essentials.yml
+    with:
+      cluster-provider: ${{ github.event.inputs.cluster-provider }}
+    secrets:
+      GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      TANZU_NETWORK_API_TOKEN: ${{ secrets.TANZU_NETWORK_API_TOKEN }}
+      TANZU_NETWORK_USERNAME: ${{ secrets.TANZU_NETWORK_USERNAME }}
+      TANZU_NETWORK_PASSWORD: ${{ secrets.TANZU_NETWORK_PASSWORD }}
+      KUBECONFIG_CONTENTS: ${{ github.event.inputs.kubeconfig-contents }}

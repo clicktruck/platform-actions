@@ -1,0 +1,117 @@
+name: "install-tanzu-cluster-essentials"
+
+on:
+  workflow_call:
+    inputs:
+      cluster-provider:
+        description: "The Kubernetes service provider"
+        type: string
+        required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+      AWS_SESSION_TOKEN:
+        required: false
+      AZURE_AD_CLIENT_ID:
+        required: false
+      AZURE_AD_CLIENT_SECRET:
+        required: false
+      AZURE_SUBSCRIPTION_ID:
+        required: false
+      AZURE_AD_TENANT_ID:
+        required: false
+      GOOGLE_PROJECT_ID:
+        required: false
+      GOOGLE_SERVICE_ACCOUNT_KEY:
+        required: false
+      KUBECONFIG_CONTENTS:
+        required: true
+      TANZU_NETWORK_API_TOKEN:
+        required: true
+      TANZU_NETWORK_USERNAME:
+        required: true
+      TANZU_NETWORK_PASSWORD:
+        required: true
+
+jobs:
+  encode-tanzu-cluster-essentials-install-script:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      result: ${{ steps.encode.outputs.result }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/scripts
+    - name: Encode
+      id: encode
+      run: |
+          result="$(cat install-tanzu-cluster-essentials.sh | base64 -w 0)"
+          echo "result=${result}" >> $GITHUB_OUTPUT
+
+  install:
+    needs: encode-tanzu-cluster-essentials-install-script
+    runs-on: ubuntu-22.04
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout application-templates
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/application-templates
+
+    - name: Checkout azure-actions
+      if: inputs.cluster-provider == 'aks'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/azure-actions
+
+    - name: Checkout aws-actions
+      if: inputs.cluster-provider == 'eks'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/aws-actions
+
+    - name: Checkout google-actions
+      if: inputs.cluster-provider == 'gke'
+      uses: actions/checkout@v4
+      with:
+        repository: clicktruck/google-actions
+
+    - name: "Install Tanzu Cluster Essentials on AKS"
+      if: inputs.cluster-provider == 'aks'
+      uses: ./docker/actions/azure/tanzu-runsh-setup-action
+      with:
+        script-contents: ${{ needs.encode-tanzu-cluster-essentials-install-script.outputs.result }}
+        script-arguments: '${{ secrets.TANZU_NETWORK_API_TOKEN }} ${{ secrets.TANZU_NETWORK_USERNAME }} ${{ secrets.TANZU_NETWORK_PASSWORD }}'
+        kubeconfig-contents: ${{ secrets.KUBECONFIG_CONTENTS }}
+        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        azure-tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
+        azure-ad-client-id: ${{ secrets.AZURE_AD_CLIENT_ID }}
+        azure-ad-client-secret: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+
+    - name: "Install Tanzu Cluster Essentials on GKE"
+      if: inputs.cluster-provider == 'gke'
+      uses: ./docker/actions/google/tanzu-runsh-setup-action
+      with:
+        script-contents: ${{ needs.encode-tanzu-cluster-essentials-install-script.outputs.result }}
+        script-arguments: '${{ secrets.TANZU_NETWORK_API_TOKEN }} ${{ secrets.TANZU_NETWORK_USERNAME }} ${{ secrets.TANZU_NETWORK_PASSWORD }}'
+        kubeconfig-contents: ${{ secrets.KUBECONFIG_CONTENTS }}
+        google-project-id: ${{ secrets.GOOGLE_PROJECT_ID }}
+        google-service-account-key: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+
+    - name: "Install Tanzu Cluster Essentials on EKS"
+      if: inputs.cluster-provider == 'eks'
+      uses: ./docker/actions/aws/tanzu-runsh-setup-action
+      with:
+        script-contents: ${{ needs.encode-tanzu-cluster-essentials-install-script.outputs.result }}
+        script-arguments: '${{ secrets.TANZU_NETWORK_API_TOKEN }} ${{ secrets.TANZU_NETWORK_USERNAME }} ${{ secrets.TANZU_NETWORK_PASSWORD }}'
+        kubeconfig-contents: ${{ secrets.KUBECONFIG_CONTENTS }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
