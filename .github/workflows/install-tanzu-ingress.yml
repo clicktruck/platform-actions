@@ -96,24 +96,28 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: clicktruck/application-templates
+        path: template
 
     - name: Checkout azure-actions
       if: inputs.target-cloud == 'azure'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/azure-actions
+        path: runnable
 
     - name: Checkout aws-actions
       if: inputs.target-cloud == 'aws'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/aws-actions
+        path: runnable
 
     - name: Checkout google-actions
       if: inputs.target-cloud == 'google'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/google-actions
+        path: runnable
 
     ## FIXME:
     ## We'll likely source manufactured sensitive data like domain, private registry credentials from a secrets management store like AWS Secrets Manager or Azure KeyVault
@@ -208,7 +212,7 @@ jobs:
 
     - name: "Install Tanzu Ingress on Azure"
       if: inputs.target-cloud == 'azure'
-      uses: ./docker/actions/azure/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/azure/tanzu-runsh-setup-action
       with:
         script-contents: ${{ needs.encode-tanzu-ingress-install-script.outputs.result }}
         script-arguments: "${{ env.GITOPS_DIR }} tanzu-ingress"
@@ -220,7 +224,7 @@ jobs:
 
     - name: "Install Tanzu Ingress on AWS"
       if: inputs.target-cloud == 'aws'
-      uses: ./docker/actions/aws/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/aws/tanzu-runsh-setup-action
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -231,7 +235,7 @@ jobs:
 
     - name: "Install Tanzu Ingress on Google"
       if: inputs.target-cloud == 'google'
-      uses: ./docker/actions/google/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/google/tanzu-runsh-setup-action
       with:
         google-project-id: ${{ secrets.GOOGLE_PROJECT_ID }}
         google-service-account-key: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}

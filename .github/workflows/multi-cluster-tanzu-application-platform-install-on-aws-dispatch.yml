@@ -118,15 +118,17 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: clicktruck/application-templates
+        path: template
 
     - name: Checkout aws-actions
       uses: actions/checkout@v4
       with:
         repository: clicktruck/aws-actions
+        path: runnable
 
     - name: "Fetch secrets from secret manager instance"
       id: obtain-secret-valuemap
-      uses: ./docker/actions/aws/tanzu-cli-setup-action
+      uses: ./runnable/docker/actions/aws/tanzu-cli-setup-action
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

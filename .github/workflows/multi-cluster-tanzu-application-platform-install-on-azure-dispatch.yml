@@ -63,15 +63,17 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: clicktruck/application-templates
+        path: template
 
     - name: Checkout azure-actions
       uses: actions/checkout@v4
       with:
         repository: clicktruck/azure-actions
+        path: runnable
 
     - name: "Fetch secrets from secret manager instance"
       id: vars
-      uses: ./docker/actions/azure/tanzu-cli-setup-action
+      uses: ./runnable/docker/actions/azure/tanzu-cli-setup-action
       with:
         azure-ad-client-id: ${{ secrets.AZURE_AD_CLIENT_ID }}
         azure-ad-client-secret: ${{ secrets.AZURE_AD_CLIENT_SECRET }}

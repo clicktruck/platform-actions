@@ -73,24 +73,28 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: clicktruck/application-templates
+        path: template
 
     - name: Checkout azure-actions
       if: inputs.cluster-provider == 'aks'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/azure-actions
+        path: runnable
 
     - name: Checkout aws-actions
       if: inputs.cluster-provider == 'eks'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/aws-actions
+        path: runnable
 
     - name: Checkout google-actions
       if: inputs.cluster-provider == 'gke'
       uses: actions/checkout@v4
       with:
         repository: clicktruck/google-actions
+        path: runnable
 
     - name: Render standard-install-config
       uses: chuhlomin/render-template@v1.9
@@ -121,7 +125,7 @@ jobs:
 
     - name: "Install Tanzu Standard Repo on AKS"
       if: inputs.cluster-provider == 'aks'
-      uses: ./docker/actions/azure/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/azure/tanzu-runsh-setup-action
       with:
         script-contents: ${{ needs.encode-tanzu-standard-repo-install-script.outputs.result }}
         script-arguments: "${{ env.GITOPS_DIR }} tanzu-standard-repo"
@@ -133,7 +137,7 @@ jobs:
 
     - name: "Install Tanzu Standard Repo on EKS"
       if: inputs.cluster-provider == 'eks'
-      uses: ./docker/actions/aws/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/aws/tanzu-runsh-setup-action
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -144,7 +148,7 @@ jobs:
 
     - name: "Install Tanzu Standard Repo on GKE"
       if: inputs.cluster-provider == 'gke'
-      uses: ./docker/actions/google/tanzu-runsh-setup-action
+      uses: ./runnable/docker/actions/google/tanzu-runsh-setup-action
       with:
         google-project-id: ${{ secrets.GOOGLE_PROJECT_ID }}
         google-service-account-key: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
