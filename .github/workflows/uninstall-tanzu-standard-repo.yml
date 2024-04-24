@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      GITOPS_DIR: tanzu/standard
+      GITOPS_DIR: template/tanzu/standard
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-22.04, macos-latest, or windows-latest
     defaults:
