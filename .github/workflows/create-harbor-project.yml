@@ -35,7 +35,7 @@ jobs:
         wget https://github.com/hinyinlam/cli-for-harbor/releases/download/${HARBOR_CLI_RELEASE}/cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
         tar xvf cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
-        harbor login --username admin --password DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
+        harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
         cat <<EOF > new-project.yml
         kind: project/CreateProjectParams
