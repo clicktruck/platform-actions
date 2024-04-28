@@ -25,6 +25,6 @@ jobs:
       api-endpoint: ${{ github.event.inputs.api-endpoint }}
       project: ${{ github.event.inputs.project }}
     secrets:
-      HARBOR_USERNAME: ${{ github.event.inputs.domain }}
+      HARBOR_USERNAME: ${{ github.event.inputs.username }}
       HARBOR_PASSWORD: ${{ github.event.inputs.password }}
       PA_TOKEN: ${{ secrets.PA_TOKEN }}
