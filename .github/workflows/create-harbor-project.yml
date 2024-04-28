@@ -25,23 +25,26 @@ jobs:
       HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
       HARBOR_API_ENDPOINT: ${{ inputs.api-endpoint }}
       NEW_HARBOR_PROJECT: ${{ inputs.project }}
-      HARBOR_CLI_RELEASE: "v0.5"
-      HARBOR_CLI_JAR_VERSION: "harbor-cli-0.0.1-SNAPSHOT.jar"
+      HARBOR_CLI_RELEASE: "v0.0.4"
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'liberica'
-        java-version: '17'
-
     - name: Create new Harbor project
       run: |
-        wget https://github.com/hinyinlam-pivotal/cli-for-harbor/releases/download/${HARBOR_CLI_RELEASE}/${HARBOR_CLI_JAR_VERSION}
+        wget https://github.com/hinyinlam/cli-for-harbor/releases/download/${HARBOR_CLI_RELEASE}/cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
+        tar xvf cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
-        java -jar ${HARBOR_CLI_JAR_VERSION} login --username $HARBOR_USERNAME --password "$DECODED_HARBOR_PASSWORD" --api $HARBOR_API_ENDPOINT
+        harbor login --username admin --password DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
-        echo "{ \"projectName\": \"$NEW_HARBOR_PROJECT\", \"public\": false }" > new-project.json
-        java -jar ${HARBOR_CLI_JAR_VERSION} project create --project new-project.json
+        cat <<EOF > new-project.yml
+        kind: project/CreateProjectParams
+        apiVersion: v1alpha1
+        spec:
+          xresourcenameinlocation: false
+          project:
+            projectname: "tanzu"
+            public: true
+        EOF
+        harbor project create --filename new-project.yml
+        harbor project list
