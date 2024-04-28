@@ -27,3 +27,4 @@ jobs:
     secrets:
       HARBOR_USERNAME: ${{ github.event.inputs.domain }}
       HARBOR_PASSWORD: ${{ github.event.inputs.password }}
+      PA_TOKEN: ${{ secrets.PA_TOKEN }}

@@ -16,6 +16,8 @@ on:
         required: true
       HARBOR_PASSWORD:
         required: true
+      PA_TOKEN:
+        required: true
 
 jobs:
   create-new-project:
@@ -25,15 +27,15 @@ jobs:
       HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
       HARBOR_API_ENDPOINT: ${{ inputs.api-endpoint }}
       NEW_HARBOR_PROJECT: ${{ inputs.project }}
-      HARBOR_CLI_RELEASE: "v0.0.4"
+      GH_TOKEN: ${{ secrets.PA_TOKEN }}
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Create new Harbor project
       run: |
-        wget https://github.com/hinyinlam/cli-for-harbor/releases/download/${HARBOR_CLI_RELEASE}/cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
-        tar xvf cli-for-harbor_${HARBOR_CLI_RELEASE}_Linux_x86_64.tar.gz
+        gh release download -R hinyinlam/cli-for-harbor -p '*Linux_x86_64.tar.gz' --skip-existing
+        tar xvf *Linux_x86_64.tar.gz
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
         harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
@@ -43,7 +45,7 @@ jobs:
         spec:
           xresourcenameinlocation: false
           project:
-            projectname: "tanzu"
+            projectname: "$NEW_HARBOR_PROJECT"
             public: true
         EOF
         harbor project create --filename new-project.yml
