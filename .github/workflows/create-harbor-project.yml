@@ -37,7 +37,7 @@ jobs:
         gh release download -R hinyinlam/cli-for-harbor -p '*Linux_x86_64.tar.gz' --skip-existing
         tar xvf *Linux_x86_64.tar.gz
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
-        harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
+        ./harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
         cat <<EOF > new-project.yml
         kind: project/CreateProjectParams
@@ -48,5 +48,5 @@ jobs:
             projectname: "$NEW_HARBOR_PROJECT"
             public: true
         EOF
-        harbor project create --filename new-project.yml
-        harbor project list
+        ./harbor project create --filename new-project.yml
+        ./harbor project list
