@@ -22,25 +22,23 @@ on:
 jobs:
   create-new-project:
     runs-on: ubuntu-22.04
+    env:
+      MANIFEST_YML: ./new-project.yml
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Write manifest for new Harbor project
-      uses: "DamianReeves/write-file-action@master"
       env:
         NEW_HARBOR_PROJECT: ${{ inputs.project }}
-      with:
-        path: ./new-project.yml
-        write-mode: overwrite
-        contents: |
-          kind: project/CreateProjectParams
-          apiVersion: v1alpha1
-          spec:
-            xresourcenameinlocation: false
-            project:
-              projectname: "$NEW_HARBOR_PROJECT"
-              public: true
+      run: |
+        echo "kind: project/CreateProjectParams" > $MANIFEST_YML
+        echo "apiVersion: v1alpha1" >> $MANIFEST_YML
+        echo "spec:" >> $MANIFEST_YML
+        echo "  xresourcenameinlocation: false" >> $MANIFEST_YML
+        echo "  project:" >> $MANIFEST_YML
+        echo "    projectname: \"$NEW_HARBOR_PROJECT\"" >> $MANIFEST_YML
+        echo "    public: true" >> $MANIFEST_YML
 
     - name: Create new Harbor project
       env:
@@ -54,6 +52,5 @@ jobs:
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
         ./harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
-        cat ./new-project.yml
-        ./harbor project create --filename ./new-project.yml
+        ./harbor project create --filename $MANIFEST_YML
         ./harbor project list
