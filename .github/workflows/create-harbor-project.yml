@@ -45,6 +45,6 @@ jobs:
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
         ./harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
-        echo "kind: project/CreateProjectParams\napiVersion: v1alpha1\nspec:\n  xresourcenameinlocation: false\n  project:\n    projectname: $NEW_HARBOR_PROJECT\n    public: true" > new-project.yml
+        echo "kind: project/CreateProjectParams\napiVersion: v1alpha1\nspec:\n  xresourcenameinlocation: false\n  project:\n    projectname: \"$NEW_HARBOR_PROJECT\"\n    public: true" > new-project.yml
         ./harbor project create --filename new-project.yml
         ./harbor project list
