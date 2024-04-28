@@ -53,5 +53,6 @@ jobs:
         DECODED_HARBOR_PASSWORD=$(echo "$HARBOR_PASSWORD" | base64 -d)
         ./harbor login --username $HARBOR_USERNAME --password $DECODED_HARBOR_PASSWORD --url "https://$HARBOR_API_ENDPOINT"
         set -x
+        cat ./new-project.yml
         ./harbor project create --filename ./new-project.yml
         ./harbor project list
