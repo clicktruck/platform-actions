@@ -22,18 +22,14 @@ on:
 jobs:
   create-new-project:
     runs-on: ubuntu-22.04
-    env:
-      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
-      HARBOR_API_ENDPOINT: ${{ inputs.api-endpoint }}
-      NEW_HARBOR_PROJECT: ${{ inputs.project }}
-      GH_TOKEN: ${{ secrets.PA_TOKEN }}
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Write manifest for new Harbor project
       uses: "DamianReeves/write-file-action@master"
+      env:
+        NEW_HARBOR_PROJECT: ${{ inputs.project }}
       with:
         path: ./new-project.yml
         write-mode: overwrite
@@ -47,6 +43,11 @@ jobs:
               public: true
 
     - name: Create new Harbor project
+      env:
+        HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+        HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+        HARBOR_API_ENDPOINT: ${{ inputs.api-endpoint }}
+        GH_TOKEN: ${{ secrets.PA_TOKEN }}
       run: |
         gh release download -R hinyinlam/cli-for-harbor -p '*Linux_x86_64.tar.gz' --skip-existing
         tar xvf *Linux_x86_64.tar.gz
