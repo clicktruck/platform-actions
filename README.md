@@ -54,26 +54,26 @@ gh repo sync --source clicktruck/platform-actions
 
 ## Usage
 
-Actions
+Review this curated collection of dispatch workflows.
 
 | Action | Link |
 | :---   | :---: |
 | Clean Workflow Logs | [:white_check_mark:](../../actions/workflows/clean-workflow-run-logs.yml) |
-| Create new project in Harbor | [:white_check_mark:](../../actions/workflows/create-harbor-project-dispatch.yml) |
-| _Install Tanzu Application Platform_ |   |
-| » Single cluster | [:white_check_mark:](../../actions/workflows/install-tanzu-application-platform-dispatch.yml) |
-| » Multi cluster (targeting: AWS) | [:white_check_mark:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-aws-dispatch.yml) |
-| » Multi cluster (targeting: Azure) | [:white_check_mark:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-azure-dispatch.yml) |
-| » Multi cluster (targeting: Google Cloud) | [:white_check_mark:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-google-dispatch.yml) |
+| Relocate images from Tanzu Network to private container image registry | [:white_check_mark:](../../actions/workflows/relocate-tap-images-from-tanzu-network-to-container-registry-dispatch.yml) |
 | Install Tanzu Cluster Essentials | [:white_check_mark:](../../actions/workflows/install-tanzu-cluster-essentials-dispatch.yml) |
 | Install Tanzu Data Services Repository | [:white_check_mark:](../../actions/workflows/install-tanzu-data-services-repo-dispatch.yml) |
 | Install Ingress Providers (contour, cert-manager, external-dns) | [:white_check_mark:](../../actions/workflows/install-tanzu-ingress-dispatch.yml) |
 | Install Tanzu Standard Repository | [:white_check_mark:](../../actions/workflows/install-tanzu-standard-repo-dispatch.yml) |
-| Onboard cluster to Application Live View | [:white_check_mark:](../../actions/workflows/onboard-cluster-to-app-live-view-dispatch.yml) |
-| Prepare Metadata Secrets Store | [:white_check_mark:](../../actions/workflows/prepare-metadata-store-secrets-dispatch.yml) |
-| Relocate images from Tanzu Network to private container image registry | [:white_check_mark:](../../actions/workflows/relocate-tap-images-from-tanzu-network-to-container-registry-dispatch.yml) |
+| Create new project in Harbor | [:white_check_mark:](../../actions/workflows/create-harbor-project-dispatch.yml) |
+| _Install Tanzu Application Platform_ |   |
+| » Single cluster | [:construction:](../../actions/workflows/install-tanzu-application-platform-dispatch.yml) |
+| » Multi cluster (targeting: AWS) | [:construction:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-aws-dispatch.yml) |
+| » Multi cluster (targeting: Azure) | [:construction:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-azure-dispatch.yml) |
+| » Multi cluster (targeting: Google Cloud) | [:construction:](../../actions/workflows/multi-cluster-tanzu-application-platform-install-on-google-dispatch.yml) |
+| Onboard cluster to Application Live View | [:construction:](../../actions/workflows/onboard-cluster-to-app-live-view-dispatch.yml) |
+| Prepare Metadata Secrets Store | [:construction:](../../actions/workflows/prepare-metadata-store-secrets-dispatch.yml) |
 | _Uninstall Tanzu Application Platform_ |   |
-| » Single cluster | [:white_check_mark:](../../actions/workflows/uninstall-tanzu-application-platform-dispatch.yml) |
+| » Single cluster | [:construction:](../../actions/workflows/uninstall-tanzu-application-platform-dispatch.yml) |
 | Uninstall Tanzu Data Services Repository | [:white_check_mark:](../../actions/workflows/uninstall-tanzu-data-services-repo-dispatch.yml) |
 | Uninstall Ingress Providers (contour, cert-manager, external-dns) | [:white_check_mark:](../../actions/workflows/uninstall-tanzu-ingress-dispatch.yml) |
 | Uninstall Tanzu Standard Repository | [:white_check_mark:](../../actions/workflows/uninstall-tanzu-standard-repo-dispatch) |
