@@ -59,7 +59,7 @@ Review this curated collection of dispatch workflows.
 | Action | Link |
 | :---   | :---: |
 | Clean Workflow Logs | [:white_check_mark:](../../actions/workflows/clean-workflow-run-logs.yml) |
-| Relocate images from Tanzu Network to private container image registry | [:white_check_mark:](../../actions/workflows/relocate-tap-images-from-tanzu-network-to-container-registry-dispatch.yml) |
+| Relocate images from Tanzu Network to private container image registry | [:construction:](../../actions/workflows/relocate-tap-images-from-tanzu-network-to-container-registry-dispatch.yml) |
 | Install Tanzu Cluster Essentials | [:white_check_mark:](../../actions/workflows/install-tanzu-cluster-essentials-dispatch.yml) |
 | Install Tanzu Data Services Repository | [:white_check_mark:](../../actions/workflows/install-tanzu-data-services-repo-dispatch.yml) |
 | Install Ingress Providers (contour, cert-manager, external-dns) | [:white_check_mark:](../../actions/workflows/install-tanzu-ingress-dispatch.yml) |
