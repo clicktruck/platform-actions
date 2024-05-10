@@ -97,7 +97,7 @@ jobs:
         path: runnable
 
     - name: Render data-services-install-config
-      uses: chuhlomin/render-template@v1.9
+      uses: chuhlomin/render-template@v1.10
       with:
         template: ${{ env.GITOPS_DIR }}/.init/data-services-install-config.tpl
         vars: |
@@ -105,7 +105,7 @@ jobs:
         result_path: ${{ env.GITOPS_DIR }}/.init/data-services-install-config.yml
 
     - name: Render data-services-install-secrets
-      uses: chuhlomin/render-template@v1.9
+      uses: chuhlomin/render-template@v1.10
       with:
         template: ${{ env.GITOPS_DIR }}/.init/data-services-install-secrets.tpl
         vars: |
@@ -116,7 +116,7 @@ jobs:
         result_path: ${{ env.GITOPS_DIR }}/.init/data-services-install-secrets.yml
 
     - name: Render data-services-install
-      uses: chuhlomin/render-template@v1.9
+      uses: chuhlomin/render-template@v1.10
       with:
         template: ${{ env.GITOPS_DIR }}/.install/data-services-install.tpl
         vars: |
