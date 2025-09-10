@@ -1,6 +1,9 @@
 # platform-actions
 
-![Current State](https://img.shields.io/badge/current%20state-volatile-orange)
+![Current State](https://img.shields.io/badge/current%20state-archived-darkred)
+
+> [!CAUTION]
+> This repository depended on VMware Tanzu Application Platform assets, images hosted in the Tanzu Standard container registry, and links to the Pivotal Network. In 2023, VMware (now a Broadcom company) consolidated and realigned these offerings, resulting in the deprecation or migration of public access to Tanzu images and Pivotal assets. As a result, this project is archived and no longer maintained.
 
 Github Action workflows for installing and configuring app platform dial-tone
 
